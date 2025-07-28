@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Perfect Neon Analog Clock</title>
+  <style>
+    :root {
+      --bg-color: #000;
+      --border-color: #0ff;
+      --center-color: #0ff;
+      --hour-color: #0ff;
+      --minute-color: #0f0;
+      --second-color: #f00;
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      background: var(--bg-color);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Poppins', sans-serif;
+      color: #fff;
+    }
+
+    .clock {
+      width: 300px;
+      height: 300px;
+      border: 10px solid var(--border-color);
+      border-radius: 50%;
+      position: relative;
+      box-shadow: 0 0 20px var(--border-color), 0 0 60px var(--border-color);
+    }
+
+    .center {
+      width: 15px;
+      height: 15px;
+      background: var(--center-color);
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 10px var(--center-color);
+      z-index: 10;
+    }
+
+    .hand {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform-origin: bottom center;
+      transform: translate(-50%, -100%) rotate(0deg);
+      border-radius: 3px;
+    }
+
+    .hand.hour {
+      width: 6px;
+      height: 70px;
+      background: var(--hour-color);
+      box-shadow: 0 0 15px var(--hour-color);
+    }
+
+    .hand.minute {
+      width: 4px;
+      height: 100px;
+      background: var(--minute-color);
+      box-shadow: 0 0 15px var(--minute-color);
+    }
+
+    .hand.second {
+      width: 2px;
+      height: 110px;
+      background: var(--second-color);
+      box-shadow: 0 0 15px var(--second-color);
+    }
+
+    .number {
+      position: absolute;
+      color: var(--border-color);
+      font-size: 1.2em;
+      font-weight: bold;
+      transform: translate(-50%, -50%);
+      text-shadow: 0 0 5px var(--border-color);
+    }
+
+    .date-display {
+      margin-top: 20px;
+      font-size: 1.2em;
+      text-shadow: 0 0 5px var(--border-color);
+    }
+  </style>
+</head>
+<body>
+  <div class="clock" id="clock">
+    <div class="center"></div>
+    <div class="hand hour"></div>
+    <div class="hand minute"></div>
+    <div class="hand second"></div>
+  </div>
+  <div class="date-display" id="date"></div>
+
+  <script>
+    const hourHand = document.querySelector('.hand.hour');
+    const minuteHand = document.querySelector('.hand.minute');
+    const secondHand = document.querySelector('.hand.second');
+    const dateDisplay = document.getElementById('date');
+
+    function updateClock() {
+      const now = new Date();
+      const seconds = now.getSeconds();
+      const minutes = now.getMinutes();
+      const hours = now.getHours();
+
+      const secondDeg = seconds * 6;
+      const minuteDeg = (minutes + seconds / 60) * 6;
+      const hourDeg = (hours % 12 + minutes / 60) * 30;
+
+      secondHand.style.transform = `translate(-50%, -100%) rotate(${secondDeg}deg)`;
+      minuteHand.style.transform = `translate(-50%, -100%) rotate(${minuteDeg}deg)`;
+      hourHand.style.transform = `translate(-50%, -100%) rotate(${hourDeg}deg)`;
+
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      dateDisplay.textContent = now.toLocaleDateString(undefined, options);
+    }
+
+    function addClockNumbers() {
+      const clock = document.getElementById('clock');
+      const radius = 130;
+      const centerX = clock.offsetWidth / 2;
+      const centerY = clock.offsetHeight / 2;
+
+      for (let i = 1; i <= 12; i++) {
+        const angle = (i / 12) * 2 * Math.PI;
+        const number = document.createElement('div');
+        number.className = 'number';
+        number.innerText = i;
+
+        const x = centerX + radius * Math.sin(angle);
+        const y = centerY - radius * Math.cos(angle);
+
+        number.style.left = `${x}px`;
+        number.style.top = `${y}px`;
+
+        clock.appendChild(number);
+      }
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock();
+    addClockNumbers();
+  </script>
+</body>
+</html>
